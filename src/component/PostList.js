@@ -2,6 +2,9 @@ import PostItem from "./PostItem";
 
 const PostList = (props) => {
   const { remove, posts, title } = props;
+  if (!posts.length) {
+    return <h1 style={{ textAlign: "center" }}>Список постов пуст</h1>;
+  }
 
   return (
     <div>
