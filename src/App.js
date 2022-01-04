@@ -10,6 +10,7 @@ import PostServise from "./component/API/PostServise";
 import Loader from "./component/UI/loader/Loader";
 import { useFetching } from "./component/hooks/useFetching";
 import { getPageCount, getPagesArray } from "./utils/pages";
+import Pagination from "./component/UI/pagination/Pagination";
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -23,14 +24,17 @@ function App() {
 
   let pageArray = getPagesArray(totalPages);
 
-  const [fetchPosts, isPostLoading, postError] = useFetching(async () => {
-    const response = await PostServise.getAll(limit, page);
-    setPosts(response.data);
-    const totalCount = response.headers["x-total-count"];
-    setTotalPages(getPageCount(totalCount, limit));
-  });
+  const [fetchPosts, isPostLoading, postError] = useFetching(
+    async (limit, page) => {
+      const response = await PostServise.getAll(limit, page);
+      setPosts(response.data);
+      const totalCount = response.headers["x-total-count"];
+      setTotalPages(getPageCount(totalCount, limit));
+    }
+  );
 
-  useEffect(() => fetchPosts(), []);
+  useEffect(() => fetchPosts(limit, page), []);
+
   console.log(pageArray, page);
 
   const createPost = (newPost) => {
@@ -40,6 +44,11 @@ function App() {
 
   const removePost = (post) => {
     setPosts(posts.filter((p) => p.id !== post.id));
+  };
+
+  const changePage = (p) => {
+    setPage(p);
+    fetchPosts(limit, page);
   };
 
   return (
@@ -59,9 +68,7 @@ function App() {
       </MyModal>
       <hr style={{ margin: "15px 0" }} />
       <PostFilter filter={filter} setFilter={setFilter} />
-
       {postError && <h1>Произошла ошибка: {postError}</h1>}
-
       {isPostLoading ? (
         <div
           style={{
@@ -79,18 +86,7 @@ function App() {
           title="Список постов"
         />
       )}
-
-      <div className="page__wrapper">
-        {pageArray.map((p) => (
-          <span
-            className={page === p ? "page page__current" : "page"}
-            key={p}
-            onClick={() => setPage(p)}
-          >
-            {p}
-          </span>
-        ))}
-      </div>
+      <Pagination page={page} changePage={changePage} totalPages={totalPages} />
     </div>
   );
 }
