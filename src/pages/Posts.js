@@ -6,7 +6,7 @@ import "../styles/App.css";
 import MyModal from "../component/UI/myModal/MyModal";
 import MyButton from "../component/UI/button/MyButton";
 import { usePosts } from "../hooks/usePosts";
-import PostServise from "../API/PostServise";
+import PostService from "../API/PostService";
 import Loader from "../component/UI/loader/Loader";
 import { useFetching } from "../hooks/useFetching";
 import { getPageCount, getPagesArray } from "../utils/pages";
@@ -26,7 +26,7 @@ const Posts = () => {
 
   const [fetchPosts, isPostLoading, postError] = useFetching(
     async (limit, page) => {
-      const response = await PostServise.getAll(limit, page);
+      const response = await PostService.getAll(limit, page);
       setPosts(response.data);
       const totalCount = response.headers["x-total-count"];
       setTotalPages(getPageCount(totalCount, limit));
@@ -34,8 +34,6 @@ const Posts = () => {
   );
 
   useEffect(() => fetchPosts(limit, page), []);
-
-  console.log(pageArray, page);
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
