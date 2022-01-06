@@ -6,17 +6,26 @@ import { AuthContext } from "../context";
 // import Error from "../pages/Error";
 // import PostIdPage from "../pages/PostIdPage";
 import { privateRoutes, publicRoutes } from "../router";
+import Loader from "./UI/loader/Loader";
 
 const AppRouter = () => {
-  const { isAuth, setIsAuth } = useContext(AuthContext);
-  console.log(isAuth);
+  const { isLoading, isAuth, setIsAuth } = useContext(AuthContext);
+
+  console.log("isAuth", isAuth);
+  console.log("isLoading", isLoading);
+
+  if (isLoading) {
+    console.log("Loader", isLoading);
+    return <Loader />;
+  }
+  console.log("Loaderof", isLoading);
   return isAuth ? (
     <Routes>
       {privateRoutes.map((route) => (
         <Route key={route.path} path={route.path} element={<route.element />} />
       ))}
-      <Route path="/" element={<Navigate to="/posts" />} />
-      <Route path="*" element={<Navigate to="/error" />} />
+      {/* <Route path="/" element={<Navigate to="/posts" />} /> */}
+      {/* <Route path="*" element={<Navigate to="/error" />} /> */}
     </Routes>
   ) : (
     <Routes>
